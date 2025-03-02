@@ -1,8 +1,20 @@
-# Container image that runs your code
-FROM alpine:3.10
+# Use the latest Node.js 23 official image
+FROM node:23.0.0
 
-# Copies your code file from your action repository to the filesystem path `/` of the container
-COPY entrypoint.sh /entrypoint.sh
+# Set working directory inside the container
+WORKDIR /app
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["/entrypoint.sh"]
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --only=production
+
+# Copy the entire project to the container
+COPY . .
+
+# Expose the port
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "index.js"]
